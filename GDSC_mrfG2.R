@@ -1,17 +1,25 @@
+#===================================================================================================
+# This script is to generate a subset of the GDSC data.
+# You need load the datasets from ftp://ftp.sanger.ac.uk/pub4/cancerrxgene/releases/release-5.0/. But downloading and transforming the three used datasets below to *.csv files first.
+#
+# author: Zhi Zhao (zhi.zhao@medisin.uio.no)
+# date: 31-Mar-2020
+#===================================================================================================
+
 rm(list = ls())
 library(plyr)
 library(data.table)
 
-features <- data.frame(read.csv("/Users/zhiz/Downloads/release-current/gdsc_en_input_w5.csv", head=T))
+features <- data.frame(read.csv("gdsc_en_input_w5.csv", head=T))
 names.fea <- strsplit(rownames(features), "")
 features <- t(features)
 p <- c(13321, 13747-13321, 13818-13747)
 Cell.Line <- rownames(features)
 features <- data.frame(Cell.Line, features)
 
-ic50_00 <- data.frame(read.csv("/Users/zhiz/Downloads/release-current/gdsc_drug_sensitivity_fitted_data_w5.csv", head=T))
+ic50_00 <- data.frame(read.csv("gdsc_drug_sensitivity_fitted_data_w5.csv", head=T))
 ic50_0 <- ic50_00[,c(1,4,7)]
-drug.id <- data.frame(read.csv("/Users/zhiz/Downloads/release-current/gdsc_tissue_output_w5.csv", head=T))[,c(1,3)]
+drug.id <- data.frame(read.csv("gdsc_tissue_output_w5.csv", head=T))[,c(1,3)]
 drug.id2 <- drug.id[!duplicated(drug.id$drug.id),]
 # delete drug.id=1066 since ID1066 and ID156 both correspond drug AZD6482, 
 # and no ID1066 in the "suppl.Data1" by Garnett et al. (2012)
@@ -162,10 +170,8 @@ save(GDSC_mrfG2, file="GDSC_mrfG2.rda")
 
 # create the target gene names of the two groups of drugs
 # targetGenes1 <- matrix(Idx_Pathway1,nrow=1)
-# colnames(targetGenes1) <- colnames(example_GDSC$data)[length(name_drugs)+
-                                                        GDSC$num.nonpen+targetGenes1]
+# colnames(targetGenes1) <- colnames(example_GDSC$data)[length(name_drugs)+ GDSC$num.nonpen+targetGenes1]
 # targetGenes2 <- matrix(Idx_Pathway2,nrow=1)
-# colnames(targetGenes2) <- colnames(example_GDSC$data)[length(name_drugs)+
-                                                        GDSC$num.nonpen+targetGenes2]
+# colnames(targetGenes2) <- colnames(example_GDSC$data)[length(name_drugs)+ GDSC$num.nonpen+targetGenes2]
 
 #example_GDSC_targets <- list(group1=targetGenes1, group2=targetGenes2)
