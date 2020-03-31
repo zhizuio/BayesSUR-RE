@@ -1,5 +1,5 @@
 #######################
-## R-code for all results in paper 
+## This script is for all results in paper 
 ## "Structured Bayesian variable selection for multiple related response variables and high-dimensional predictors"
 ## 
 ## author: Zhi Zhao (zhi.zhao@medisin.uio.no)

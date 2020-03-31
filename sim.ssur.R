@@ -1,3 +1,10 @@
+#===================================================================================================
+# This script is to simulate data based on a SUR model without random effects
+#
+# author: Zhi Zhao (zhi.zhao@medisin.uio.no)
+# date: 31-Mar-2020
+#===================================================================================================
+
 sim.ssur <- function(n, s, p, t0=0, seed=123){
   # set seed to fix coefficients
   set.seed(seed) 
@@ -58,9 +65,6 @@ sim.ssur <- function(n, s, p, t0=0, seed=123){
     }
   }
   
-  v_r = mean(diag(var(xb))) / snr
-  
-  nu = s+1
   corr_param = 0.9 # in 0.3 , 0.6 , 0.9
   M = matrix(corr_param,s,s)
   diag(M) = rep(1,s)
