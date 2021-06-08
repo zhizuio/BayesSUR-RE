@@ -2,15 +2,18 @@
 # This script is to simulate data based on a SUR model with random effects
 #
 # author: Zhi Zhao (zhi.zhao@medisin.uio.no)
-# date: 31-Mar-2020
+# date: 08-June-2021
 #===================================================================================================
 
-sim.ssur <- function(n, s, p, t0=0, seed=123){
+sim.ssur.re <- function(n, s, p, t0=0, seed=123){
   # set seed to fix coefficients
-  set.seed(seed) 
-  sd_b = .2
-  b = matrix(rnorm((p)*s,0.5,sd_b),p,s)
+  set.seed(7193) 
+  sd_b = 1
+  mu_b = 1
+  b = matrix(rnorm(p*s,mu_b,sd_b),p,s)
+  #b = matrix(runif(p*s,-2,2),p,s)
   
+  snr = 10
   # design groups and pathways of Gamma matrix
   gamma = matrix(FALSE,p,s)
   #gamma[1,] = TRUE
@@ -54,7 +57,7 @@ sim.ssur <- function(n, s, p, t0=0, seed=123){
     }
   }
   
-  corr_param = 0.9 # in 0.3 , 0.6 , 0.9
+  corr_param = 0.5 # in 0.3 , 0.6 , 0.9
   M = matrix(corr_param,s,s)
   diag(M) = rep(1,s)
   
@@ -66,29 +69,63 @@ sim.ssur <- function(n, s, p, t0=0, seed=123){
   
   #check
   dimnames(G) = list(1:s,1:s)
-  length( gRbase::mcsMAT(G - diag(s)) ) > 0
+  #length( gRbase::mcsMAT(G - diag(s)) ) > 0
   
   var = solve(BDgraph::rgwish(n=1,adj=G,b=3,D=M))
   
-  # change seeds to add randomness on error
-  # change seeds to add randomness on error
+  #control signal-to-noise ratio
+  factor = 10 ; factor_min = 0.01; factor_max = 1000
+  count = 0 ; maxit = 10000
+  
+  factor_prev = 1
+  
   set.seed(seed+8493)
-  sd_err = 1 # 2
-  
-  err = matrix(rnorm(n*s, 0, sd_err),n,s) %*% chol(as.matrix(var))
-  
-  if(t0 == 0){
-    b.re <- 0
-    z <- 0
-    y <- xb + err
-  }else{
-    # add random effects
-    z <- model.matrix( ~ factor(rMultinom(matrix(c(.1,.2,.3,.4),nrow=1),n)) - 1)
-    # use fixed random seed for b.re
-    b.re <- matrix(rnorm(t0*s,0,2), t0, s)
-    y <- z%*%b.re + xb + err
+  repeat{
+    
+    var = var / factor * factor_prev
+    
+    ### Sample the errors and the Ys
+    cVar = chol(as.matrix(var))
+    err = matrix(rnorm(n*s),n,s) %*% cVar
+    
+    if(t0 == 0){
+      b.re <- 0
+      z <- 0
+      y <- xb + err
+    }else{
+      # add random effects
+      z <- t(rmultinom(n, size = 1, prob = c(.1,.2,.3,.4)))
+      # use fixed random seed for b.re
+      b.re <- matrix(rnorm(t0*s,0,2), t0, s)
+      y <- z%*%b.re + xb + err
+    }
+    
+    ## Reparametrisation ( assuming PEO is 1:s )
+    cVar = t(cVar) # make it lower-tri
+    S = diag(diag(cVar))
+    sigma = S*S
+    L = cVar %*% solve(S)
+    rho =  diag(s) - solve(L)
+    
+    ### S/N Ratio
+    emp_snr = mean( diag( var(xb) %*% solve(sigma) ))
+    emp_g_snr = mean( diag( var( (err)%*%t(rho) ) %*% solve(sigma) ))
+    
+    ##############
+    
+    if( abs(emp_snr - snr) < (snr/10) | count > maxit ){
+      break
+    }else{
+      if( emp_snr < snr ){ # increase factor
+        factor_min = factor
+      }else{ # decrease factor
+        factor_max = factor
+      }
+      factor_prev = factor
+      factor = (factor_min + factor_max)/2
+    }
+    count = count+1
   }
-
   return( list(y=y, x=x, b=b, gamma=gamma, z=z, b.re=b.re, Gy=G, mrfG=combnAll ) )
   
 }
