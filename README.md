@@ -1,6 +1,6 @@
 # BayesSUR-RE
 
-This repository is for the results in the paper *Multivariate Bayesian structured variable selection for pharmacogenomic studies* by 'Zhao Z., Banterle M., Lewin A. and Zucknick M. (2022)', [arXiv:2101.05899](https://arxiv.org/abs/2101.05899v3).
+This repository is for the results in the paper *Multivariate Bayesian structured variable selection for pharmacogenomic studies* by 'Zhao Z., Banterle M., Lewin A. and Zucknick M. (2022)', [arXiv:2101.05899v3](https://arxiv.org/abs/2101.05899v3).
 
 # Data
 ## Abstract
