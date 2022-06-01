@@ -1,6 +1,6 @@
 # BayesSUR-RE
 
-This repository is for the results in the paper *Structured Bayesian variable selection for multiple correlated response variables and high-dimensional predictors* by 'Zhao Z., Banterle M., Lewin A. and Zucknick M. (2021)', [arXiv:2101.05899](https://arxiv.org/abs/2101.05899).
+This repository is for the results in the paper *Multivariate Bayesian structured variable selection for pharmacogenomic studies* by 'Zhao Z., Banterle M., Lewin A. and Zucknick M. (2022)', [arXiv:2101.05899](https://arxiv.org/abs/2101.05899v3).
 
 # Data
 ## Abstract
@@ -41,7 +41,7 @@ The real data analysis is computationally intensive due to high-dimensional geno
 
 All tables, Figures 3-5, and Figures 7-10 can be reproduced through the provided code. The general steps are:
 
-1. Load simulation functions through files `sim.ssur.R` and `sim.ssur.re.R`.
+1. Load simulation function through file `simulation_function.R`.
 2. Run script `simulation_results.R` line by line to reproduce all simulation results in the article.
 3. Download real data by following the above Data section.
 4. Run script `GDSC_preprocess1.R` to get the real data ready for modelling (need to uncomment some lines to obtain datasets corresponding 'Feature sets II and III' in the article); run script `GDSC_preprocess2.R` to get the independent validation data.
